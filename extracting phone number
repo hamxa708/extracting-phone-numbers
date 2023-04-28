@@ -1,0 +1,59 @@
+from tkinter import *
+import phonenumbers as pn
+root=Tk()
+root.title("Extracting contact number")
+mylabel=Label(root,text="Enter the file path without \"")
+mylabel.pack()
+e=Entry(root,text="enter the file path",width=50)
+e.pack()
+def extraction():
+ with open(e.get()) as f:
+ lines = f.readlines()
+ num=[]
+ temp=""
+#to remove any dashes from numbers
+ for c in lines:
+ for i in c:
+ if i=="-":
+ i.replace("-","")
+#to get phone number form text
+ for i in range((len(lines))):
+ for c in lines[i]:
+ if c=="+":
+ temp="+"
+ if c.isdigit():
+ temp=temp+c
+ #to avoid other numbers like dates etc.
+ if len(temp)==13:
+ num.append(temp)
+# we used set to remove duplicate terms from list
+ set_num=set(num)
+ list_num=list(set(num))
+
+ mylabel2=Label(root,text=set_num)
+ mylabel2.pack()
+ from phonenumbers import timezone
+ for j in range(len(list_num)):
+ countrycode=pn.parse(list_num[j])
+ tz=timezone.time_zones_for_number(countrycode)
+ mylabel3=Label(root,text=countrycode)
+ mylabel3.pack()
+ mylabel4=Label(root,text=tz)
+ mylabel4.pack()
+ print()
+ # to remove numbers that are not from Karachi
+ final_list=[]
+ for k in range(len(list_num)):
+ if "+91" in list_num[k]:
+ continue
+ final_list.append(list_num[k])
+ mylabel5=Label(root,text="We are interested in these
+only",font="SansSerif",fg="red")
+ mylabel5.pack()
+ print()
+ mylabel6=Label(root,text=final_list)
+ mylabel6.pack()
+
+mybutton=Button(root,text="Extract",fg='red',command=extraction)
+mybutton.pack()
+root.mainloop()
